@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简谱转古琴减字谱</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'SimHei', 'STKaiti', serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1f2d, #2c3e50, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 18s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            color: #f0f0f0;
+        }
+        
+        /* 背景装饰元素 */
+        .decoration {
+            position: absolute;
+            opacity: 0.05;
+            z-index: -1;
+            font-size: 120px;
+            color: #d4af37;
+            pointer-events: none;
+        }
+        
+        .decoration:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            transform: rotate(-15deg);
+        }
+        
+        .decoration:nth-child(2) {
+            bottom: 15%;
+            right: 8%;
+            transform: rotate(25deg);
+        }
+        
+        .decoration:nth-child(3) {
+            top: 40%;
+            right: 15%;
+            font-size: 80px;
+            transform: rotate(10deg);
+        }
+        
+        .decoration:nth-child(4) {
+            bottom: 30%;
+            left: 10%;
+            font-size: 90px;
+            transform: rotate(-20deg);
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 毛玻璃容器 */
+        .glass-container {
+            background: rgba(20, 25, 35, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            padding: 35px 30px;
+            width: 90%;
+            max-width: 900px;
+            margin-top: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #d4af37, #f0e68c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+        
+        /* 输入区域样式 */
+        .input-section {
+            background: rgba(30, 35, 45, 0.6);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: transform 0.4s ease;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .input-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 16px 22px;
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(20, 25, 35, 0.7);
+            color: #f0f0f0;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        input::placeholder {
+            color: rgba(200, 200, 200, 0.7);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2), 
+                        inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(to right, #d4af37, #b8860b);
+            color: #2c2c2c;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+            background: linear-gradient(to right, #e6c052, #d4af37);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .example {
+            font-size: 0.95rem;
+            color: #c0c0c0;
+            margin-top: 10px;
+            background: rgba(40, 45, 55, 0.5);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 3px solid #d4af37;
+        }
+        
+        .example i {
+            color: #d4af37;
+            margin-right: 8px;
+        }
+        
+        /* 减字谱输出区域 */
+        .output-section {
+            background: rgba(30, 35, 45, 0.6);
+            border-radius: 16px;
+            padding: 25px;
+            min-height: 300px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .output-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #d4af37;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .output-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+        }
+        
+        .notation-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .notation-card {
+            background: linear-gradient(145deg, rgba(40, 35, 50, 0.8), rgba(30, 25, 40, 0.9));
+            border-radius: 16px;
+            padding: 25px 20px;
+            width: 140px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .notation-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+        
+        .notation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #d4af37, #b8860b);
+        }
+        
+        .notation-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: space-around;
+        }
+        
+        .hui-info {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            background: rgba(20, 15, 25, 0.4);
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .hui-info::after {
+            content: '徽';
+            position: absolute;
+            right: 15px;
+            bottom: 8px;
+            font-size: 1rem;
+            color: rgba(212, 175, 55, 0.7);
+        }
+        
+        .string-info {
+            font-size: 1.5rem;
+            color: #f5f5f5;
+            text-align: center;
+            padding: 8px 0;
+            width: 100%;
+            background: rgba(20, 15, 25, 0.3);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .string-info::after {
+            content: '弦';
+            position: absolute;
+            right: 15px;
+            bottom: 8px;
+            font-size: 1rem;
+            color: rgba(212, 175, 55, 0.7);
+        }
+        
+        .finger-info {
+            font-size: 1.3rem;
+            color: #b5b5b5;
+            text-align: center;
+            padding: 8px 15px;
+            width: 100%;
+            background: rgba(20, 15, 25, 0.4);
+            border-radius: 8px;
+            font-style: italic;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .glass-container {
+                width: 95%;
+                padding: 25px 20px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .notation-card {
+                width: 130px;
+                height: 170px;
+                padding: 20px 15px;
+            }
+            
+            .hui-info {
+                font-size: 1.6rem;
+            }
+            
+            .string-info {
+                font-size: 1.3rem;
+            }
+            
+            .finger-info {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.9rem;
+            }
+            
+            .notation-card {
+                width: 120px;
+                height: 160px;
+                padding: 18px 12px;
+            }
+            
+            .hui-info {
+                font-size: 1.4rem;
+            }
+            
+            .string-info {
+                font-size: 1.1rem;
+            }
+            
+            .finger-info {
+                font-size: 0.95rem;
+            }
+        }
+        
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 50px 0;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+        
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: rgba(212, 175, 55, 0.5);
+        }
+        
+        .empty-state p {
+            max-width: 300px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(212, 175, 55, 0.2);
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #d4af37;
+            color: #2c2c2c;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            cursor: help;
+            position: relative;
+        }
+        
+        .info-icon:hover::after {
+            content: '减字谱是古琴特有的记谱法，用汉字减笔划组合表示徽位、弦位和指法';
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            padding: 10px;
+            background: rgba(30, 30, 40, 0.9);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #f0f0f0;
+            z-index: 10;
+        }
+        
+        .notation-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 28px;
+            height: 28px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰元素 -->
+    <div class="decoration">宫</div>
+    <div class="decoration">商</div>
+    <div class="decoration">角</div>
+    <div class="decoration">徵</div>
+    
+    <div class="glass-container">
+        <header>
+            <h1>简谱转古琴减字谱</h1>
+            <p>输入简谱音符，获取古琴弹奏指法信息<span class="info-icon">i</span></p>
+        </header>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="scoreInput" placeholder="请输入简谱（例如：1 2 3 5 6）">
+                <button id="convertBtn"><i class="fas fa-exchange-alt"></i> 转换减字谱</button>
+            </div>
+            <div class="example">
+                <i class="fas fa-lightbulb"></i> 示例：3 5 6 1 2 3 2 1 6 5 3 5 6 或 1,2,3,5,6（用空格或逗号分隔）
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <h2>古琴弹奏指法</h2>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>正在生成减字谱信息...</p>
+            </div>
+            
+            <div id="notationOutput" class="notation-container">
+                <div class="empty-state">
+                    <i class="fas fa-music"></i>
+                    <p>输入简谱并转换后，古琴指法信息将显示在这里</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 古琴减字谱转换器 | 传承千年古琴艺术</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const convertBtn = document.getElementById('convertBtn');
+            const scoreInput = document.getElementById('scoreInput');
+            const notationOutput = document.getElementById('notationOutput');
+            const loading = document.getElementById('loading');
+            
+            // 减字谱映射数据
+            const notationMap = {
+                '1': { hui: '十', string: '五', finger: '大指按' },
+                '2': { hui: '九', string: '四', finger: '食指挑' },
+                '3': { hui: '七六', string: '七', finger: '中指勾' },
+                '4': { hui: '七', string: '六', finger: '名指打' },
+                '5': { hui: '九', string: '三', finger: '大指擘' },
+                '6': { hui: '十八', string: '二', finger: '食指抹' },
+                '7': { hui: '十三', string: '一', finger: '中指剔' }
+            };
+            
+            // 转换按钮点击事件
+            convertBtn.addEventListener('click', convertNotation);
+            
+            // 简谱转换函数
+            function convertNotation() {
+                const input = scoreInput.value.trim();
+                
+                if (!input) {
+                    alert('请输入简谱内容');
+                    return;
+                }
+                
+                // 显示加载动画
+                loading.style.display = 'block';
+                notationOutput.innerHTML = '';
+                
+                // 模拟处理延迟
+                setTimeout(() => {
+                    // 处理输入（支持空格和逗号分隔）
+                    const notes = input.split(/[\s,]+/).filter(note => note !== '');
+                    
+                    // 清空输出区域
+                    notationOutput.innerHTML = '';
+                    
+                    // 处理每个音符
+                    notes.forEach((note, index) => {
+                        // 添加延迟创建效果
+                        setTimeout(() => {
+                            // 检查是否为有效音符
+                            if (notationMap[note]) {
+                                const notation = notationMap[note];
+                                const card = createNotationCard(notation.hui, notation.string, notation.finger, index+1);
+                                notationOutput.appendChild(card);
+                                
+                                // 添加动画效果
+                                setTimeout(() => {
+                                    card.classList.add('fade-in');
+                                }, 50);
+                            } else {
+                                // 无效音符处理
+                                const invalidCard = document.createElement('div');
+                                invalidCard.className = 'notation-card fade-in';
+                                invalidCard.innerHTML = `
+                                    <div class="notation-content">
+                                        <div class="hui-info">?</div>
+                                        <div class="string-info">?</div>
+                                        <div class="finger-info">无效音符</div>
+                                    </div>
+                                    <div class="notation-number">${index+1}</div>
+                                `;
+                                notationOutput.appendChild(invalidCard);
+                            }
+                        }, index * 150); // 每个卡片延迟150ms出现
+                    });
+                    
+                    // 隐藏加载动画
+                    loading.style.display = 'none';
+                    
+                    // 如果没有有效音符
+                    if (notes.length === 0) {
+                        notationOutput.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>未找到有效简谱音符，请输入1-7的数字</p>
+                            </div>
+                        `;
+                    }
+                }, 800); // 模拟处理时间
+            }
+            
+            // 创建减字谱卡片
+            function createNotationCard(hui, string, finger, index) {
+                const card = document.createElement('div');
+                card.className = 'notation-card';
+                
+                card.innerHTML = `
+                    <div class="notation-content">
+                        <div class="hui-info">${hui}</div>
+                        <div class="string-info">${string}</div>
+                        <div class="finger-info">${finger}</div>
+                    </div>
+                    <div class="notation-number">${index}</div>
+                `;
+                
+                return card;
+            }
+            
+            // 页面加载时添加示例数据
+            scoreInput.value = '3 5 6 1 2 3 2 1 6 5 3 5 6';
+            
+            // 初始转换示例
+            setTimeout(convertNotation, 1000);
+        });
+    </script>
+</body>
+</html>
