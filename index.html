@@ -14,7 +14,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a1f2d, #2c3e50, #1a2a6c);
+            background: linear-gradient(135deg, #0f1a2d, #1d2c4d, #0a1e36);
             background-size: 400% 400%;
             animation: gradientBG 18s ease infinite;
             min-height: 100vh;
@@ -71,7 +71,7 @@
         
         /* 毛玻璃容器 */
         .glass-container {
-            background: rgba(20, 25, 35, 0.3);
+            background: rgba(20, 25, 35, 0.25);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 20px;
@@ -79,7 +79,7 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
             padding: 35px 30px;
             width: 90%;
-            max-width: 900px;
+            max-width: 1000px;
             margin-top: 30px;
         }
         
@@ -232,28 +232,24 @@
         }
         
         .notation-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
             margin-top: 15px;
         }
         
         .notation-card {
             background: linear-gradient(145deg, rgba(40, 35, 50, 0.8), rgba(30, 25, 40, 0.9));
             border-radius: 16px;
-            padding: 25px 20px;
-            width: 140px;
-            height: 180px;
+            padding: 20px 15px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
             border: 1px solid rgba(212, 175, 55, 0.3);
+            min-height: 160px;
         }
         
         .notation-card:hover {
@@ -272,67 +268,78 @@
             background: linear-gradient(to right, #d4af37, #b8860b);
         }
         
-        .notation-content {
+        .card-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            height: 100%;
-            justify-content: space-around;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 12px;
         }
         
-        .hui-info {
-            font-size: 1.8rem;
+        .note-number {
+            width: 30px;
+            height: 30px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            color: #d4af37;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-            background: rgba(20, 15, 25, 0.4);
-            border-radius: 8px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-            position: relative;
+            font-size: 0.9rem;
         }
         
-        .hui-info::after {
-            content: '徽';
-            position: absolute;
-            right: 15px;
-            bottom: 8px;
-            font-size: 1rem;
-            color: rgba(212, 175, 55, 0.7);
-        }
-        
-        .string-info {
+        .note-value {
             font-size: 1.5rem;
             color: #f5f5f5;
-            text-align: center;
-            padding: 8px 0;
-            width: 100%;
-            background: rgba(20, 15, 25, 0.3);
+            font-weight: bold;
+            background: rgba(20, 15, 25, 0.4);
+            padding: 5px 15px;
             border-radius: 8px;
-            position: relative;
         }
         
-        .string-info::after {
-            content: '弦';
-            position: absolute;
-            right: 15px;
-            bottom: 8px;
-            font-size: 1rem;
-            color: rgba(212, 175, 55, 0.7);
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-grow: 1;
+        }
+        
+        .position-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .position-label {
+            width: 50px;
+            font-size: 0.9rem;
+            color: #d4af37;
+            text-align: right;
+        }
+        
+        .position-value {
+            flex-grow: 1;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f5f5f5;
+            padding: 6px 12px;
+            background: rgba(20, 15, 25, 0.4);
+            border-radius: 8px;
+            border-left: 3px solid #d4af37;
         }
         
         .finger-info {
-            font-size: 1.3rem;
-            color: #b5b5b5;
-            text-align: center;
-            padding: 8px 15px;
-            width: 100%;
-            background: rgba(20, 15, 25, 0.4);
+            margin-top: auto;
+            padding: 10px 12px;
+            background: rgba(20, 15, 25, 0.5);
             border-radius: 8px;
+            color: #b5b5b5;
+            font-size: 1.1rem;
             font-style: italic;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border-top: 1px dashed rgba(212, 175, 55, 0.3);
         }
         
         .fade-in {
@@ -359,22 +366,16 @@
                 flex-direction: column;
             }
             
-            .notation-card {
-                width: 130px;
-                height: 170px;
-                padding: 20px 15px;
+            .notation-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
             
-            .hui-info {
-                font-size: 1.6rem;
-            }
-            
-            .string-info {
-                font-size: 1.3rem;
+            .position-value {
+                font-size: 1.2rem;
             }
             
             .finger-info {
-                font-size: 1.1rem;
+                font-size: 1.0rem;
             }
         }
         
@@ -383,22 +384,16 @@
                 font-size: 1.9rem;
             }
             
-            .notation-card {
-                width: 120px;
-                height: 160px;
-                padding: 18px 12px;
+            .notation-container {
+                grid-template-columns: 1fr;
             }
             
-            .hui-info {
-                font-size: 1.4rem;
+            .note-value {
+                font-size: 1.3rem;
             }
             
-            .string-info {
+            .position-value {
                 font-size: 1.1rem;
-            }
-            
-            .finger-info {
-                font-size: 0.95rem;
             }
         }
         
@@ -482,22 +477,6 @@
             color: #f0f0f0;
             z-index: 10;
         }
-        
-        .notation-number {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 28px;
-            height: 28px;
-            background: #d4af37;
-            color: #1a1a1a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -553,13 +532,13 @@
             
             // 减字谱映射数据
             const notationMap = {
-                '1': { hui: '十', string: '五', finger: '大指按' },
-                '2': { hui: '九', string: '四', finger: '食指挑' },
-                '3': { hui: '七六', string: '七', finger: '中指勾' },
-                '4': { hui: '七', string: '六', finger: '名指打' },
-                '5': { hui: '九', string: '三', finger: '大指擘' },
-                '6': { hui: '十八', string: '二', finger: '食指抹' },
-                '7': { hui: '十三', string: '一', finger: '中指剔' }
+                '1': { hui: '十徽', string: '五弦', finger: '大指按' },
+                '2': { hui: '九徽', string: '四弦', finger: '食指挑' },
+                '3': { hui: '七徽六分', string: '七弦', finger: '中指勾' },
+                '4': { hui: '七徽', string: '六弦', finger: '名指打' },
+                '5': { hui: '九徽', string: '三弦', finger: '大指擘' },
+                '6': { hui: '十徽八分', string: '二弦', finger: '食指抹' },
+                '7': { hui: '十三徽', string: '一弦', finger: '中指剔' }
             };
             
             // 转换按钮点击事件
@@ -593,7 +572,7 @@
                             // 检查是否为有效音符
                             if (notationMap[note]) {
                                 const notation = notationMap[note];
-                                const card = createNotationCard(notation.hui, notation.string, notation.finger, index+1);
+                                const card = createNotationCard(notation.hui, notation.string, notation.finger, note, index+1);
                                 notationOutput.appendChild(card);
                                 
                                 // 添加动画效果
@@ -605,12 +584,21 @@
                                 const invalidCard = document.createElement('div');
                                 invalidCard.className = 'notation-card fade-in';
                                 invalidCard.innerHTML = `
-                                    <div class="notation-content">
-                                        <div class="hui-info">?</div>
-                                        <div class="string-info">?</div>
+                                    <div class="card-header">
+                                        <div class="note-number">${index+1}</div>
+                                        <div class="note-value">${note}</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="position-row">
+                                            <div class="position-label">徽位</div>
+                                            <div class="position-value">无效</div>
+                                        </div>
+                                        <div class="position-row">
+                                            <div class="position-label">弦位</div>
+                                            <div class="position-value">无效</div>
+                                        </div>
                                         <div class="finger-info">无效音符</div>
                                     </div>
-                                    <div class="notation-number">${index+1}</div>
                                 `;
                                 notationOutput.appendChild(invalidCard);
                             }
@@ -633,17 +621,26 @@
             }
             
             // 创建减字谱卡片
-            function createNotationCard(hui, string, finger, index) {
+            function createNotationCard(hui, string, finger, note, index) {
                 const card = document.createElement('div');
                 card.className = 'notation-card';
                 
                 card.innerHTML = `
-                    <div class="notation-content">
-                        <div class="hui-info">${hui}</div>
-                        <div class="string-info">${string}</div>
+                    <div class="card-header">
+                        <div class="note-number">${index}</div>
+                        <div class="note-value">${note}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="position-row">
+                            <div class="position-label">徽位</div>
+                            <div class="position-value">${hui}</div>
+                        </div>
+                        <div class="position-row">
+                            <div class="position-label">弦位</div>
+                            <div class="position-value">${string}</div>
+                        </div>
                         <div class="finger-info">${finger}</div>
                     </div>
-                    <div class="notation-number">${index}</div>
                 `;
                 
                 return card;
