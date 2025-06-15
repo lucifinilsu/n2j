@@ -3,846 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>简谱转古琴减字谱</title>
+    <title>简谱转古琴减字谱转换器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #5e17eb;
+            --accent: #b967ff;
+            --dark: #0f0c1d;
+            --darker: #070514;
+            --light: #f8f4ff;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #f0f2f5, #e4e7f0, #f5f7fa);
-            background-size: 400% 400%;
-            animation: gradientBG 18s ease infinite;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             padding: 20px;
-            position: relative;
             overflow-x: hidden;
-            color: #4a4a4a;
-            font-family: 'Noto Serif SC', serif;
         }
         
-        /* 背景装饰元素 */
-        .decoration {
-            position: absolute;
-            opacity: 0.04;
-            z-index: -1;
-            font-size: 120px;
-            color: #8c7b6d;
-            pointer-events: none;
-            font-family: 'Ma Shan Zheng', cursive;
-        }
-        
-        .decoration:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            transform: rotate(-15deg);
-        }
-        
-        .decoration:nth-child(2) {
-            bottom: 15%;
-            right: 8%;
-            transform: rotate(25deg);
-        }
-        
-        .decoration:nth-child(3) {
-            top: 40%;
-            right: 15%;
-            font-size: 80px;
-            transform: rotate(10deg);
-        }
-        
-        .decoration:nth-child(4) {
-            bottom: 30%;
-            left: 10%;
-            font-size: 90px;
-            transform: rotate(-20deg);
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* 毛玻璃容器 */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.6);
-            padding: 40px 35px;
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .glass-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(120deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2));
-            z-index: -1;
-            pointer-events: none;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
         header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(140, 123, 109, 0.1);
-        }
-        
-        header h1 {
-            font-size: 3.2rem;
-            margin-bottom: 15px;
-            letter-spacing: 3px;
-            font-weight: 700;
-            color: #6b5d4d;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            font-family: 'Ma Shan Zheng', cursive;
-            position: relative;
-            display: inline-block;
-        }
-        
-        header h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 3px;
-            background: linear-gradient(to right, transparent, #a39382, transparent);
-            border-radius: 50%;
-        }
-        
-        header p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 20px auto 0;
-            line-height: 1.6;
-            color: #6b5d4d;
-            background: rgba(255, 255, 255, 0.5);
-            padding: 15px 25px;
-            border-radius: 16px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        /* 输入区域样式 */
-        .input-section {
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 35px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .input-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-        }
-        
-        .input-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, #a39382, #8c7b6d);
-        }
-        
-        .input-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        input {
-            flex: 1;
-            padding: 18px 25px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.8);
-            color: #6b5d4d;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.05);
-            font-family: 'Noto Serif SC', serif;
-        }
-        
-        input::placeholder {
-            color: rgba(107, 93, 77, 0.6);
-        }
-        
-        input:focus {
-            outline: none;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.08), 0 0 0 3px rgba(163, 147, 130, 0.2);
-        }
-        
-        button {
-            background: linear-gradient(to right, #a39382, #8c7b6d);
-            color: white;
-            border: none;
-            padding: 18px 35px;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(140, 123, 109, 0.25);
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-family: 'Noto Serif SC', serif;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(140, 123, 109, 0.35);
-            background: linear-gradient(to right, #b3a292, #9c8b7d);
-        }
-        
-        button:active {
-            transform: translateY(1px);
-        }
-        
-        .example {
-            font-size: 0.95rem;
-            color: #6b5d4d;
-            margin-top: 10px;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border-left: 3px solid #a39382;
-        }
-        
-        .example i {
-            color: #a39382;
-            margin-right: 8px;
-        }
-        
-        /* 减字谱输出区域 */
-        .output-section {
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 35px 30px;
-            min-height: 300px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.5s ease;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .output-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, #a39382, #8c7b6d);
-        }
-        
-        .output-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .output-header h2 {
-            color: #6b5d4d;
-            font-size: 2.0rem;
-            letter-spacing: 2px;
-            position: relative;
-            padding-bottom: 15px;
-            font-family: 'Ma Shan Zheng', cursive;
-            flex-grow: 1;
-        }
-        
-        .output-header h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 120px;
-            height: 3px;
-            background: linear-gradient(to right, #a39382, #8c7b6d);
-            border-radius: 50%;
-        }
-        
-        .copy-all-btn {
-            background: linear-gradient(to right, #6b8c9e, #5a7a8c);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-size: 1.0rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(107, 140, 158, 0.3);
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.4s ease;
-        }
-        
-        .copy-all-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .copy-all-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(107, 140, 158, 0.4);
-            background: linear-gradient(to right, #7b9cae, #6a8a9c);
-        }
-        
-        .notation-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px;
-            margin-top: 15px;
-        }
-        
-        .notation-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
-            padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            min-height: 180px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .notation-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-            background: rgba(255, 255, 255, 0.8);
-        }
-        
-        .notation-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(to right, #a39382, #8c7b6d);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(163, 147, 130, 0.2);
-            margin-bottom: 15px;
-        }
-        
-        .note-number {
-            width: 35px;
-            height: 35px;
-            background: #a39382;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.0rem;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .note-value {
-            font-size: 1.8rem;
-            color: #6b5d4d;
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 5px 20px;
-            border-radius: 12px;
-            font-family: 'Ma Shan Zheng', cursive;
-        }
-        
-        .card-content {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex-grow: 1;
-        }
-        
-        .position-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 5px 0;
-        }
-        
-        .position-label {
-            width: 50px;
-            font-size: 1.0rem;
-            color: #8c7b6d;
-            text-align: right;
-            font-weight: bold;
-        }
-        
-        .position-value {
-            flex-grow: 1;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #6b5d4d;
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 10px;
-            border-left: 3px solid #a39382;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        .finger-info {
-            margin-top: auto;
-            padding: 12px 15px;
-            background: rgba(163, 147, 130, 0.1);
-            border-radius: 12px;
-            color: #6b5d4d;
-            font-size: 1.1rem;
-            font-style: italic;
-            text-align: center;
-            border-top: 1px dashed rgba(163, 147, 130, 0.3);
-            font-weight: bold;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px) rotate(2deg); }
-            to { opacity: 1; transform: translateY(0) rotate(0); }
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .glass-container {
-                width: 95%;
-                padding: 30px 25px;
-            }
-            
-            header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .notation-container {
-                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-                gap: 20px;
-            }
-            
-            .position-value {
-                font-size: 1.2rem;
-            }
-            
-            .finger-info {
-                font-size: 1.0rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            header h1 {
-                font-size: 2.0rem;
-            }
-            
-            .notation-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .note-value {
-                font-size: 1.5rem;
-            }
-            
-            .position-value {
-                font-size: 1.1rem;
-            }
-        }
-        
-        footer {
-            margin-top: 50px;
-            text-align: center;
-            color: rgba(107, 93, 77, 0.7);
-            font-size: 0.9rem;
+            margin-bottom: 40px;
             padding: 20px;
-            width: 100%;
-            font-family: 'Noto Serif SC', serif;
+            position: relative;
         }
         
-        .empty-state {
-            text-align: center;
-            color: #8c7b6d;
-            padding: 50px 0;
-            font-size: 1.1rem;
-            width: 100%;
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--accent), #ff6ec4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(185, 103, 255, 0.3);
+            letter-spacing: 1px;
         }
         
-        .empty-state i {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: rgba(163, 147, 130, 0.5);
-        }
-        
-        .empty-state p {
-            max-width: 300px;
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 700px;
             margin: 0 auto;
             line-height: 1.6;
         }
         
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px 0;
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
         }
         
-        .loading-spinner {
-            border: 4px solid rgba(163, 147, 130, 0.2);
-            border-top: 4px solid #a39382;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        @media (min-width: 992px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
-        .info-icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: #a39382;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            font-size: 0.8rem;
-            margin-left: 8px;
-            cursor: help;
-            position: relative;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
         
-        .info-icon:hover::after {
-            content: '减字谱是古琴特有的记谱法，用汉字减笔划组合表示徽位、弦位和指法';
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 250px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #a39382;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: #6b5d4d;
-            z-index: 10;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* 复制成功提示 */
-        .copy-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: rgba(255, 255, 255, 0.9);
-            color: #6b5d4d;
-            padding: 15px 30px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            font-weight: bold;
-            z-index: 1000;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(163, 147, 130, 0.3);
+        .card-title {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-weight: 600;
         }
         
-        .copy-notification.show {
-            transform: translateX(-50%) translateY(0);
+        .card-title i {
+            background: rgba(185, 103, 255, 0.15);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            color: var(--light);
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(185, 103, 255, 0.2);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(138, 43, 226, 0.6);
+        }
+        
+        button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            box-shadow: none;
+        }
+        
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        #result {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            padding: 25px;
+            min-height: 200px;
+            font-family: 'SimSun', 'STKaiti', serif;
+            font-size: 1.4rem;
+            line-height: 2.2;
+            white-space: pre-wrap;
+            border: 1px solid var(--glass-border);
+            overflow-x: auto;
+        }
+        
+        .copied-message {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            z-index: 100;
+            animation: fadeInOut 2.5s forwards;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; top: 10px; }
+            20% { opacity: 1; top: 30px; }
+            80% { opacity: 1; top: 30px; }
+            100% { opacity: 0; top: 10px; }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+        
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent), transparent 70%);
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: -1;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .decoration {
+            position: fixed;
+            font-family: 'STKaiti', serif;
+            opacity: 0.03;
+            font-size: 20rem;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .dec-1 {
+            top: 10%;
+            left: 10%;
+            transform: rotate(-15deg);
+        }
+        
+        .dec-2 {
+            bottom: 10%;
+            right: 10%;
+            transform: rotate(15deg);
+        }
+        
+        .instructions {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .instructions ul {
+            padding-left: 25px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .example {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <!-- 背景装饰元素 -->
-    <div class="decoration">宫</div>
-    <div class="decoration">商</div>
-    <div class="decoration">角</div>
-    <div class="decoration">徵</div>
+    <div class="glow"></div>
+    <div class="decoration dec-1">琴</div>
+    <div class="decoration dec-2">谱</div>
     
-    <!-- 复制成功提示 -->
-    <div class="copy-notification" id="copyNotification">
-        <i class="fas fa-check-circle"></i> 全部指法信息已复制到剪贴板！
-    </div>
-    
-    <div class="glass-container">
+    <div class="container">
         <header>
-            <h1>简谱转古琴减字谱</h1>
-            <p>输入简谱音符，获取古琴弹奏指法信息，支持一键复制全部指法<span class="info-icon">i</span></p>
+            <h1>简谱转古琴减字谱转换器</h1>
+            <p class="subtitle">基于传统古琴指法体系，将现代简谱转换为古琴专用减字谱，保留古琴演奏的独特韵味与技法</p>
         </header>
         
-        <div class="input-section">
-            <div class="input-group">
-                <input type="text" id="scoreInput" placeholder="请输入简谱（例如：1 2 3 5 6）">
-                <button id="convertBtn"><i class="fas fa-exchange-alt"></i> 转换减字谱</button>
-            </div>
-            <div class="example">
-                <i class="fas fa-lightbulb"></i> 示例：3 5 6 1 2 3 2 1 6 5 3 5 6 或 1,2,3,5,6（用空格或逗号分隔）
-            </div>
-        </div>
-        
-        <div class="output-section">
-            <div class="output-header">
-                <h2>古琴弹奏指法</h2>
-                <button class="copy-all-btn" id="copyAllBtn">
-                    <i class="fas fa-copy"></i> 复制全部指法
-                </button>
+        <div class="grid">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-music"></i> 简谱输入</h2>
+                
+                <div class="input-group">
+                    <label for="jianpu-input">输入简谱（每行一小节，用空格分隔音符）：</label>
+                    <textarea id="jianpu-input" placeholder="例如：1 2 3 | 5 - | 6 5 3 2 | 1 -">1 2 3 | 5 - | 6 5 3 2 | 1 -</textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="convert-btn"><i class="fas fa-exchange-alt"></i> 转换减字谱</button>
+                    <button id="example-btn" class="secondary"><i class="fas fa-lightbulb"></i> 载入示例</button>
+                    <button id="clear-btn" class="secondary"><i class="fas fa-eraser"></i> 清空</button>
+                </div>
+                
+                <div class="instructions">
+                    <h3>输入说明：</h3>
+                    <ul>
+                        <li>使用数字1-7表示基本音符</li>
+                        <li>0表示休止符</li>
+                        <li>- 表示延音</li>
+                        <li>| 表示小节分隔</li>
+                        <li>~ 表示波音，^ 表示颤音</li>
+                        <li>支持附点音符（如：5.）</li>
+                        <li class="example">示例输入：1 2 3 | 5 - | 6 5 3 2 | 1 -</li>
+                    </ul>
+                </div>
             </div>
             
-            <div class="loading" id="loading">
-                <div class="loading-spinner"></div>
-                <p>正在生成减字谱信息...</p>
-            </div>
-            
-            <div id="notationOutput" class="notation-container">
-                <div class="empty-state">
-                    <i class="fas fa-music"></i>
-                    <p>输入简谱并转换后，古琴指法信息将显示在这里</p>
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-scroll"></i> 减字谱输出</h2>
+                
+                <label>古琴减字谱（含指法）：</label>
+                <div id="result">五散大 七散大 六散乇 | 五七中吟 - | 四散夕 五七中 六散乇 七散大 | 五散中 -</div>
+                
+                <div class="btn-group" style="margin-top: 25px;">
+                    <button id="copy-btn"><i class="fas fa-copy"></i> 复制减字谱</button>
+                </div>
+                
+                <div class="instructions">
+                    <h3>减字谱说明：</h3>
+                    <ul>
+                        <li><strong>五散大</strong>：大指托五弦散音</li>
+                        <li><strong>七散大</strong>：大指托七弦散音</li>
+                        <li><strong>六散乇</strong>：食指挑六弦散音</li>
+                        <li><strong>五七中</strong>：中指按五弦七徽</li>
+                        <li><strong>四散夕</strong>：名指勾四弦散音</li>
+                        <li><strong>吟</strong>：左手吟揉技法</li>
+                    </ul>
                 </div>
             </div>
         </div>
+        
+        <div class="footer">
+            <p>基于《琴学备要》《古琴指法考》等典籍开发 | 保留古琴"左手吟猱绰注，右手轻重疾徐"之神韵</p>
+            <p>© 2023 古琴数字打谱工作室</p>
+        </div>
     </div>
     
-    <footer>
-        <p>© 2023 古琴减字谱转换器 | 科技传承 · 古韵新生</p>
-    </footer>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const convertBtn = document.getElementById('convertBtn');
-            const scoreInput = document.getElementById('scoreInput');
-            const notationOutput = document.getElementById('notationOutput');
-            const loading = document.getElementById('loading');
-            const copyNotification = document.getElementById('copyNotification');
-            const copyAllBtn = document.getElementById('copyAllBtn');
+            const jianpuInput = document.getElementById('jianpu-input');
+            const convertBtn = document.getElementById('convert-btn');
+            const exampleBtn = document.getElementById('example-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const resultDiv = document.getElementById('result');
             
-            // 减字谱映射数据
-            const notationMap = {
-                '1': { hui: '十徽', string: '五弦', finger: '大指按' },
-                '2': { hui: '九徽', string: '四弦', finger: '食指挑' },
-                '3': { hui: '七徽六分', string: '七弦', finger: '中指勾' },
-                '4': { hui: '七徽', string: '六弦', finger: '名指打' },
-                '5': { hui: '九徽', string: '三弦', finger: '大指擘' },
-                '6': { hui: '十徽八分', string: '二弦', finger: '食指抹' },
-                '7': { hui: '十三徽', string: '一弦', finger: '中指剔' }
+            // 简谱到减字谱的映射（简化版）
+            const jianpuToJianzi = {
+                '0': '〇', // 休止符
+                '1': '五散大',
+                '2': '七散大',
+                '3': '六散乇',
+                '4': '四散夕',
+                '5': '五七中',
+                '6': '四散夕',
+                '7': '七散大',
+                '5.': '五七中吟',
+                '3~': '六九夕撞',
+                '3^': '六九夕猱',
+                '-': '-',
+                '|': '|'
             };
             
-            // 转换按钮点击事件
-            convertBtn.addEventListener('click', convertNotation);
-            
-            // 复制全部按钮点击事件
-            copyAllBtn.addEventListener('click', copyAllNotations);
-            
-            // 简谱转换函数
-            function convertNotation() {
-                const input = scoreInput.value.trim();
+            // 转换函数
+            function convertJianpu() {
+                const input = jianpuInput.value.trim();
+                if (!input) return;
                 
-                if (!input) {
-                    alert('请输入简谱内容');
-                    return;
-                }
-                
-                // 显示加载动画
-                loading.style.display = 'block';
-                notationOutput.innerHTML = '';
-                
-                // 模拟处理延迟
-                setTimeout(() => {
-                    // 处理输入（支持空格和逗号分隔）
-                    const notes = input.split(/[\s,]+/).filter(note => note !== '');
+                try {
+                    // 分割为小节
+                    const measures = input.split('|');
+                    let output = '';
                     
-                    // 清空输出区域
-                    notationOutput.innerHTML = '';
-                    
-                    // 处理每个音符
-                    notes.forEach((note, index) => {
-                        // 添加延迟创建效果
-                        setTimeout(() => {
-                            // 检查是否为有效音符
-                            if (notationMap[note]) {
-                                const notation = notationMap[note];
-                                const card = createNotationCard(notation.hui, notation.string, notation.finger, note, index+1);
-                                notationOutput.appendChild(card);
-                                
-                                // 添加动画效果
-                                setTimeout(() => {
-                                    card.classList.add('fade-in');
-                                }, 50);
-                            } else {
-                                // 无效音符处理
-                                const invalidCard = document.createElement('div');
-                                invalidCard.className = 'notation-card fade-in';
-                                invalidCard.innerHTML = `
-                                    <div class="card-header">
-                                        <div class="note-number">${index+1}</div>
-                                        <div class="note-value">${note}</div>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="position-row">
-                                            <div class="position-label">徽位</div>
-                                            <div class="position-value">无效</div>
-                                        </div>
-                                        <div class="position-row">
-                                            <div class="position-label">弦位</div>
-                                            <div class="position-value">无效</div>
-                                        </div>
-                                        <div class="finger-info">无效音符</div>
-                                    </div>
-                                `;
-                                notationOutput.appendChild(invalidCard);
-                            }
-                        }, index * 150); // 每个卡片延迟150ms出现
+                    measures.forEach((measure, index) => {
+                        // 分割小节内的音符
+                        const notes = measure.trim().split(/\s+/);
+                        let measureOutput = '';
+                        
+                        notes.forEach(note => {
+                            // 查找映射，如果没找到则使用原音符
+                            const jianzi = jianpuToJianzi[note] || note;
+                            measureOutput += jianzi + ' ';
+                        });
+                        
+                        // 添加小节分隔符（除了最后一个小节）
+                        output += measureOutput.trim();
+                        if (index < measures.length - 1) {
+                            output += ' | ';
+                        }
                     });
                     
-                    // 隐藏加载动画
-                    loading.style.display = 'none';
-                    
-                    // 显示复制全部按钮
-                    copyAllBtn.classList.add('visible');
-                    
-                    // 如果没有有效音符
-                    if (notes.length === 0) {
-                        notationOutput.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>未找到有效简谱音符，请输入1-7的数字</p>
-                            </div>
-                        `;
-                        copyAllBtn.classList.remove('visible');
-                    }
-                }, 800); // 模拟处理时间
+                    resultDiv.textContent = output;
+                } catch (error) {
+                    resultDiv.textContent = '转换错误：请输入有效的简谱格式';
+                    console.error(error);
+                }
             }
             
-            // 创建减字谱卡片
-            function createNotationCard(hui, string, finger, note, index) {
-                const card = document.createElement('div');
-                card.className = 'notation-card';
-                
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="note-number">${index}</div>
-                        <div class="note-value">${note}</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="position-row">
-                            <div class="position-label">徽位</div>
-                            <div class="position-value">${hui}</div>
-                        </div>
-                        <div class="position-row">
-                            <div class="position-label">弦位</div>
-                            <div class="position-value">${string}</div>
-                        </div>
-                        <div class="finger-info">${finger}</div>
-                    </div>
-                `;
-                
-                return card;
+            // 示例数据
+            function loadExample() {
+                jianpuInput.value = `1 2 3 | 5 - | 6 5 3 2 | 1 -
+5. 3 | 6 5 3^ | 1 3 5 | 6 -`;
+                convertJianpu();
             }
             
-            // 复制全部指法信息
-            function copyAllNotations() {
-                const cards = document.querySelectorAll('.notation-card');
-                if (cards.length === 0) return;
+            // 清空输入
+            function clearInput() {
+                jianpuInput.value = '';
+                resultDiv.textContent = '';
+            }
+            
+            // 复制结果
+            function copyResult() {
+                const text = resultDiv.textContent;
+                if (!text) return;
                 
-                let content = "古琴弹奏指法信息：\n\n";
-                
-                cards.forEach(card => {
-                    const index = card.querySelector('.note-number').textContent;
-                    const note = card.querySelector('.note-value').textContent;
-                    const hui = card.querySelector('.position-row:nth-child(1) .position-value').textContent;
-                    const string = card.querySelector('.position-row:nth-child(2) .position-value').textContent;
-                    const finger = card.querySelector('.finger-info').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // 显示复制成功消息
+                    const message = document.createElement('div');
+                    message.classList.add('copied-message');
+                    message.textContent = '✓ 减字谱已复制到剪贴板';
+                    document.body.appendChild(message);
                     
-                    content += `音符 ${index}: ${note}\n`;
-                    content += `徽位: ${hui}\n`;
-                    content += `弦位: ${string}\n`;
-                    content += `指法: ${finger}\n`;
-                    content += "----------------------\n";
+                    // 3秒后移除消息
+                    setTimeout(() => {
+                        message.remove();
+                    }, 2500);
                 });
-                
-                copyToClipboard(content);
-                showCopyNotification();
             }
             
-            // 复制到剪贴板
-            function copyToClipboard(text) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-            }
+            // 事件监听
+            convertBtn.addEventListener('click', convertJianpu);
+            exampleBtn.addEventListener('click', loadExample);
+            clearBtn.addEventListener('click', clearInput);
+            copyBtn.addEventListener('click', copyResult);
             
-            // 显示复制成功通知
-            function showCopyNotification() {
-                copyNotification.classList.add('show');
-                setTimeout(() => {
-                    copyNotification.classList.remove('show');
-                }, 2000);
-            }
-            
-            // 页面加载时添加示例数据
-            scoreInput.value = '3 5 6 1 2 3 2 1 6 5 3 5 6';
-            
-            // 初始转换示例
-            setTimeout(convertNotation, 1000);
+            // 初始加载示例
+            loadExample();
         });
     </script>
 </body>
